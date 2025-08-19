@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🗳️ Creative Voting App</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --accent: #0b74de;
+      --accent-2: #10b981;
+      --text: #1f2937;
+      --muted: #64748b;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      padding: 18px;
+      border-radius: 18px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+    }
+    .candidate {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .votes {
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    button:hover {
+      background: var(--accent-2);
+    }
+    button:active {
+      transform: scale(0.96);
+    }
+    .leader {
+      margin-top: 30px;
+      padding: 14px 16px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      font-weight: bold;
+      text-align: center;
+    }
+    .results {
+      margin-top: 40px;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .bar-row span {
+      width: 120px;
+      font-weight: 600;
+    }
+    .bar {
+      flex: 1;
+      height: 16px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-left: 10px;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+  <header>🗳️ Creative Voting App</header>
+
+  <main>
+    <section class="grid">
+      <div class="card">
+        <div class="candidate">Candidate A</div>
+        <div class="votes">Votes: <span id="votesA">0</span></div>
+        <button onclick="vote('A')">Vote A</button>
+      </div>
+      <div class="card">
+        <div class="candidate">Candidate B</div>
+        <div class="votes">Votes: <span id="votesB">0</span></div>
+        <button onclick="vote('B')">Vote B</button>
+      </div>
+      <div class="card">
+        <div class="candidate">Candidate C</div>
+        <div class="votes">Votes: <span id="votesC">0</span></div>
+        <button onclick="vote('C')">Vote C</button>
+      </div>
+    </section>
+
+    <div class="leader" id="leader">No votes yet</div>
+
+    <section class="results">
+      <h2>📊 Results Chart</h2>
+      <div class="bar-row">
+        <span>Candidate A</span>
+        <div class="bar"><div id="barA" class="bar-fill"></div></div>
+      </div>
+      <div class="bar-row">
+        <span>Candidate B</span>
+        <div class="bar"><div id="barB" class="bar-fill"></div></div>
+      </div>
+      <div class="bar-row">
+        <span>Candidate C</span>
+        <div class="bar"><div id="barC" class="bar-fill"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const votes = { A: 0, B: 0, C: 0 };
+
+    function vote(candidate) {
+      votes[candidate]++;
+      document.getElementById("votesA").innerText = votes.A;
+      document.getElementById("votesB").innerText = votes.B;
+      document.getElementById("votesC").innerText = votes.C;
+      updateLeader();
+      updateBars();
+    }
+
+    function updateLeader() {
+      const maxVotes = Math.max(votes.A, votes.B, votes.C);
+      const leaderEl = document.getElementById("leader");
+      if (maxVotes === 0) {
+        leaderEl.innerText = "No votes yet";
+        return;
+      }
+      const leaders = Object.entries(votes)
+        .filter(([_, v]) => v === maxVotes)
+        .map(([c]) => "Candidate " + c);
+      leaderEl.innerText =
+        leaders.length > 1
+          ? "🤝 Tie between: " + leaders.join(", ") + ` (${maxVotes} votes)`
+          : "🏆 Leading: " + leaders[0] + ` (${maxVotes} votes)`;
+    }
+
+    function updateBars() {
+      const total = votes.A + votes.B + votes.C;
+      document.getElementById("barA").style.width =
+        total === 0 ? "0%" : (votes.A / total) * 100 + "%";
+      document.getElementById("barB").style.width =
+        total === 0 ? "0%" : (votes.B / total) * 100 + "%";
+      document.getElementById("barC").style.width =
+        total === 0 ? "0%" : (votes.C / total) * 100 + "%";
+    }
+  </script>
+</body>
+</html>
